@@ -1,5 +1,6 @@
 package com.gustavo.cursospring;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import com.gustavo.cursospring.domain.Cidade;
 import com.gustavo.cursospring.domain.Cliente;
 import com.gustavo.cursospring.domain.Endereco;
 import com.gustavo.cursospring.domain.Estado;
+import com.gustavo.cursospring.domain.Pagamento;
+import com.gustavo.cursospring.domain.PagamentoComBoleto;
+import com.gustavo.cursospring.domain.PagamentoComCartao;
+import com.gustavo.cursospring.domain.Pedido;
 import com.gustavo.cursospring.domain.Produto;
+import com.gustavo.cursospring.domain.enums.EstadoPagamento;
 import com.gustavo.cursospring.domain.enums.TipoCliente;
 import com.gustavo.cursospring.repositories.CategoriaRepository;
 import com.gustavo.cursospring.repositories.CidadeRepository;
 import com.gustavo.cursospring.repositories.ClienteRepository;
 import com.gustavo.cursospring.repositories.EnderecoRepository;
 import com.gustavo.cursospring.repositories.EstadoRepository;
+import com.gustavo.cursospring.repositories.PagamentoRepository;
+import com.gustavo.cursospring.repositories.PedidoRepository;
 import com.gustavo.cursospring.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -36,6 +44,10 @@ public class CursoSpringApplication implements CommandLineRunner {
 	ClienteRepository clienteRepository;
 	@Autowired
 	EnderecoRepository enderecoRepository;
+	@Autowired
+	PedidoRepository pedidoRepository;
+	@Autowired
+	PagamentoRepository pagamentoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursoSpringApplication.class, args);
@@ -57,7 +69,13 @@ public class CursoSpringApplication implements CommandLineRunner {
 		Cliente cli1 = new Cliente(null,"Maria Silva","maria@gmail.com","123456789",TipoCliente.PESSOAFISICA);
 		Endereco e1= new Endereco(null,"Rua Flores","300","apto 203","Jardim","60633-666",cli1,c1);
 		Endereco e2= new Endereco(null,"Avenida Matos","105","Sala 800","Centro","12345-344",cli1,c2);
-		
+		SimpleDateFormat sdf =new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		Pedido ped1= new Pedido(null, sdf.parse("30/09/2019 10:32"),e1, cli1);
+		Pedido ped2  = new Pedido(null, sdf.parse("10/10/2019 11:32"), e2, cli1);
+		Pagamento pag1 = new PagamentoComCartao(null,EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pag1);
+		Pagamento pag2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2019 00:00"),null);
+		ped2.setPagamento(pag2);
 		
 		
 		cat1.getProdutos().addAll(Arrays.asList(p1, p2, p3));
@@ -69,6 +87,7 @@ public class CursoSpringApplication implements CommandLineRunner {
 		est2.getCidades().addAll(Arrays.asList(c2, c3));
 		cli1.getTelefones().addAll((Arrays.asList("85-6666.6666","85-9999.9999")));
 		cli1.getEnderecos().addAll(Arrays.asList(e1,e2));
+		cli1.getPedidos().addAll(Arrays.asList(ped1,ped2));
 		
 		categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
 		produtoRepository.saveAll(Arrays.asList(p1, p2, p3));
@@ -76,7 +95,8 @@ public class CursoSpringApplication implements CommandLineRunner {
 		cidadeRepository.saveAll(Arrays.asList(c1,c2,c3));
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(e1,e2));
-		
+		pedidoRepository.saveAll(Arrays.asList(ped1,ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pag1,pag2));
 		
 		
 	}
