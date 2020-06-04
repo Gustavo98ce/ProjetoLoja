@@ -13,6 +13,7 @@ import com.gustavo.cursospring.domain.Cidade;
 import com.gustavo.cursospring.domain.Cliente;
 import com.gustavo.cursospring.domain.Endereco;
 import com.gustavo.cursospring.domain.Estado;
+import com.gustavo.cursospring.domain.ItemPedido;
 import com.gustavo.cursospring.domain.Pagamento;
 import com.gustavo.cursospring.domain.PagamentoComBoleto;
 import com.gustavo.cursospring.domain.PagamentoComCartao;
@@ -25,6 +26,7 @@ import com.gustavo.cursospring.repositories.CidadeRepository;
 import com.gustavo.cursospring.repositories.ClienteRepository;
 import com.gustavo.cursospring.repositories.EnderecoRepository;
 import com.gustavo.cursospring.repositories.EstadoRepository;
+import com.gustavo.cursospring.repositories.ItemPedidoRepository;
 import com.gustavo.cursospring.repositories.PagamentoRepository;
 import com.gustavo.cursospring.repositories.PedidoRepository;
 import com.gustavo.cursospring.repositories.ProdutoRepository;
@@ -33,22 +35,24 @@ import com.gustavo.cursospring.repositories.ProdutoRepository;
 public class CursoSpringApplication implements CommandLineRunner {
 
 	@Autowired
-	CategoriaRepository categoriaRepository;
+	private CategoriaRepository categoriaRepository;
 	@Autowired
-	ProdutoRepository produtoRepository;
+	private ProdutoRepository produtoRepository;
 	@Autowired
-	EstadoRepository estadoRepository;
+	private EstadoRepository estadoRepository;
 	@Autowired
-	CidadeRepository cidadeRepository;
+	private CidadeRepository cidadeRepository;
 	@Autowired
-	ClienteRepository clienteRepository;
+	private ClienteRepository clienteRepository;
 	@Autowired
-	EnderecoRepository enderecoRepository;
+	private EnderecoRepository enderecoRepository;
 	@Autowired
-	PedidoRepository pedidoRepository;
+	private PedidoRepository pedidoRepository;
 	@Autowired
-	PagamentoRepository pagamentoRepository;
-
+	private PagamentoRepository pagamentoRepository;
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
+ 
 	public static void main(String[] args) {
 		SpringApplication.run(CursoSpringApplication.class, args);
 	}
@@ -76,8 +80,11 @@ public class CursoSpringApplication implements CommandLineRunner {
 		ped1.setPagamento(pag1);
 		Pagamento pag2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2019 00:00"),null);
 		ped2.setPagamento(pag2);
-		
-		
+		ItemPedido ip1 = new ItemPedido(ped1, p1,0.00,1, 2000.00);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.00);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 800.00);
+				
+				
 		cat1.getProdutos().addAll(Arrays.asList(p1, p2, p3));
 		cat2.getProdutos().addAll(Arrays.asList(p2));
 		p1.getCategorias().addAll(Arrays.asList(cat1));
@@ -88,7 +95,11 @@ public class CursoSpringApplication implements CommandLineRunner {
 		cli1.getTelefones().addAll((Arrays.asList("85-6666.6666","85-9999.9999")));
 		cli1.getEnderecos().addAll(Arrays.asList(e1,e2));
 		cli1.getPedidos().addAll(Arrays.asList(ped1,ped2));
-		
+		ped1.getItens().addAll(Arrays.asList(ip1,ip3));
+		ped2.getItens().addAll(Arrays.asList(ip3));
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
 		categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
 		produtoRepository.saveAll(Arrays.asList(p1, p2, p3));
 		estadoRepository.saveAll(Arrays.asList(est1,est2));
@@ -97,7 +108,8 @@ public class CursoSpringApplication implements CommandLineRunner {
 		enderecoRepository.saveAll(Arrays.asList(e1,e2));
 		pedidoRepository.saveAll(Arrays.asList(ped1,ped2));
 		pagamentoRepository.saveAll(Arrays.asList(pag1,pag2));
-		
+		itemPedidoRepository.saveAll(Arrays.asList(ip1,ip2,ip3));
+
 		
 	}
 
